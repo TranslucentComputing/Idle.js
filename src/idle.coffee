@@ -1,20 +1,3 @@
-# IE8* fillers for document.addEventListener & removeEventListener
-if (!document.addEventListener)  # W3C DOM
-  if (document.attachEvent) # IE DOM
-    document.addEventListener = (event, callback, useCapture) ->
-      document.attachEvent("on" + event, callback, useCapture)
-  else # No-op to prevent error
-    document.addEventListener = () ->
-      {}
-if (!document.removeEventListener)  # W3C DOM
-  if (document.detachEvent) # IE DOM
-    document.removeEventListener = (event, callback) ->
-      document.detachEvent("on" + event, callback)
-  else # No-op to prevent error
-    document.removeEventListener = () ->
-      {}
-
-
 #Idle.js main class
 "use strict"
 Idle = { }
@@ -46,17 +29,17 @@ class Idle
 
     #object to be accessed in the events that will be called by window.
     activity = this
-    activeMethod = () ->
+    @activeMethod = () ->
       activity.onActive()
     #the methods that we will use to know when there is some activity on the page
-    window.onclick = activeMethod
-    window.onmousemove = activeMethod
-    window.onmouseenter = activeMethod
-    window.onkeydown = activeMethod
-    window.onscroll = activeMethod
-    window.onmousewheel = activeMethod
-    window.ontouchmove = activeMethod
-    window.ontouchstart = activeMethod
+    window.addEventListener "onclick", @activeMethod
+    window.addEventListener "onmousemove", @activeMethod
+    window.addEventListener "onmouseenter", @activeMethod
+    window.addEventListener "onkeydown", @activeMethod
+    window.addEventListener "onscroll", @activeMethod
+    window.addEventListener "onmousewheel", @activeMethod
+    window.addEventListener "ontouchmove", @activeMethod
+    window.addEventListener "ontouchstart", @activeMethod
 
   onActive: () ->
     @awayTimestamp = new Date().getTime() + @awayTimeout
@@ -90,6 +73,15 @@ class Idle
     @
 
   stop: () ->
+    window.removeEventListener "onclick", @activeMethod
+    window.removeEventListener "onmousemove", @activeMethod
+    window.removeEventListener "onmouseenter", @activeMethod
+    window.removeEventListener "onkeydown", @activeMethod
+    window.removeEventListener "onscroll", @activeMethod
+    window.removeEventListener "onmousewheel", @activeMethod
+    window.removeEventListener "ontouchmove", @activeMethod
+    window.removeEventListener "ontouchstart", @activeMethod
+
     if (@awayTimer != null)
       clearTimeout @awayTimer
     if (@listener != null)

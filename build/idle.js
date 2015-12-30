@@ -1,31 +1,6 @@
 (function() {
-  var Idle;
-
-  if (!document.addEventListener) {
-    if (document.attachEvent) {
-      document.addEventListener = function(event, callback, useCapture) {
-        return document.attachEvent("on" + event, callback, useCapture);
-      };
-    } else {
-      document.addEventListener = function() {
-        return {};
-      };
-    }
-  }
-
-  if (!document.removeEventListener) {
-    if (document.detachEvent) {
-      document.removeEventListener = function(event, callback) {
-        return document.detachEvent("on" + event, callback);
-      };
-    } else {
-      document.removeEventListener = function() {
-        return {};
-      };
-    }
-  }
-
   "use strict";
+  var Idle;
 
   Idle = {};
 
@@ -47,7 +22,7 @@
     Idle.onHidden = null;
 
     function Idle(options) {
-      var activeMethod, activity;
+      var activity;
       if (options) {
         this.awayTimeout = parseInt(options.awayTimeout, 10);
         this.onAway = options.onAway;
@@ -56,15 +31,17 @@
         this.onHidden = options.onHidden;
       }
       activity = this;
-      activeMethod = function() {
+      this.activeMethod = function() {
         return activity.onActive();
       };
-      window.onclick = activeMethod;
-      window.onmousemove = activeMethod;
-      window.onmouseenter = activeMethod;
-      window.onkeydown = activeMethod;
-      window.onscroll = activeMethod;
-      window.onmousewheel = activeMethod;
+      window.addEventListener("onclick", this.activeMethod);
+      window.addEventListener("onmousemove", this.activeMethod);
+      window.addEventListener("onmouseenter", this.activeMethod);
+      window.addEventListener("onkeydown", this.activeMethod);
+      window.addEventListener("onscroll", this.activeMethod);
+      window.addEventListener("onmousewheel", this.activeMethod);
+      window.addEventListener("ontouchmove", this.activeMethod);
+      window.addEventListener("ontouchstart", this.activeMethod);
     }
 
     Idle.prototype.onActive = function() {
@@ -101,6 +78,14 @@
     };
 
     Idle.prototype.stop = function() {
+      window.removeEventListener("onclick", this.activeMethod);
+      window.removeEventListener("onmousemove", this.activeMethod);
+      window.removeEventListener("onmouseenter", this.activeMethod);
+      window.removeEventListener("onkeydown", this.activeMethod);
+      window.removeEventListener("onscroll", this.activeMethod);
+      window.removeEventListener("onmousewheel", this.activeMethod);
+      window.removeEventListener("ontouchmove", this.activeMethod);
+      window.removeEventListener("ontouchstart", this.activeMethod);
       if (this.awayTimer !== null) {
         clearTimeout(this.awayTimer);
       }
