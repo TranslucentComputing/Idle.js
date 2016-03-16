@@ -96,8 +96,10 @@ class Idle
     @
 
   checkAway: () ->
+    console.log "Started Check Away"
     t = new Date().getTime()
     if (t < @awayTimestamp)
+      console.log "Not Away"
       @isAway = false
       #not away yet, reset the timer with current awaytimestamp - current time with the 100ms delay
       activity = this
@@ -105,11 +107,15 @@ class Idle
         activity.checkAway()), @awayTimestamp - t + 100
       return
 
+    console.log "Away"
+
     #away now
     if (@awayTimer != null)
+      console.log "Clear away timer"
       clearTimeout @awayTimer
     @isAway = true
     if(@onAway)
+      console.log "Running onAway"
       @onAway()
 
   handleVisibilityChange: () ->

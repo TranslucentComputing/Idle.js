@@ -105,8 +105,10 @@
 
     Idle.prototype.checkAway = function() {
       var activity, t;
+      console.log("Started Check Away");
       t = new Date().getTime();
       if (t < this.awayTimestamp) {
+        console.log("Not Away");
         this.isAway = false;
         activity = this;
         this.awayTimer = setTimeout((function() {
@@ -114,11 +116,14 @@
         }), this.awayTimestamp - t + 100);
         return;
       }
+      console.log("Away");
       if (this.awayTimer !== null) {
+        console.log("Clear away timer");
         clearTimeout(this.awayTimer);
       }
       this.isAway = true;
       if (this.onAway) {
+        console.log("Running onAway");
         return this.onAway();
       }
     };
